@@ -1,5 +1,4 @@
 { "height":9,
- "infinite":false,
  "layers":[
         {
          "draworder":"topdown",
@@ -16,49 +15,6 @@
                  "width":128,
                  "x":195,
                  "y":450
-                }, 
-                {
-                 "height":0,
-                 "id":2,
-                 "name":"EmotionEmitter",
-                 "properties":
-                    {
-                     "duration":2048,
-                     "startProps":"{\"type\": \"Emotion\", \"velocity\":{\"magnitude\":[1,8],\"angle\":[-3.141592653589793,3.141592653589793]},\"opacity\":1}"
-                    },
-                 "propertytypes":
-                    {
-                     "duration":"int",
-                     "startProps":"string"
-                    },
-                 "rotation":0,
-                 "type":"ParticleEmitter",
-                 "visible":true,
-                 "width":0,
-                 "x":330,
-                 "y":150
-                }, 
-                {
-                 "gid":33,
-                 "height":64,
-                 "id":5,
-                 "name":"PillEmitter",
-                 "properties":
-                    {
-                     "duration":-1,
-                     "startProps":"{\"type\": \"Pill\", \"position\": { \"x\": [0, 960], \"y\": -32 }}"
-                    },
-                 "propertytypes":
-                    {
-                     "duration":"int",
-                     "startProps":"string"
-                    },
-                 "rotation":0,
-                 "type":"ParticleEmitter",
-                 "visible":true,
-                 "width":64,
-                 "x":390,
-                 "y":285
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -69,8 +25,7 @@
  "nextobjectid":6,
  "orientation":"orthogonal",
  "renderorder":"right-down",
- "templategroups":[],
- "tiledversion":"2017.09.13",
+ "tiledversion":"1.0.3",
  "tileheight":60,
  "tilesets":[
         {
@@ -85,19 +40,6 @@
          "tilecount":32,
          "tileheight":128,
          "tilewidth":128
-        }, 
-        {
-         "columns":8,
-         "firstgid":33,
-         "image":"..\/sprites\/pill.png",
-         "imageheight":1024,
-         "imagewidth":512,
-         "margin":0,
-         "name":"pill",
-         "spacing":0,
-         "tilecount":128,
-         "tileheight":64,
-         "tilewidth":64
         }],
  "tilewidth":60,
  "type":"map",

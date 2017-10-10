@@ -57,11 +57,6 @@ export default class Aye extends Actor {
       this.playAnimation("idle");
     }
     super.update();
-    let pe = <ParticleEmitter>this.scene.actorsByName["EmotionEmitter"];
-    pe.position.copyFrom(this.position);
-    for (let i=0;i<this.emotions;i++) {
-      pe.emit();
-    }
     this.scene.camera.copyFrom(this.position).subtractXY(this.scene.game.canvas.width/2, this.scene.game.canvas.height/2);
   }
 
