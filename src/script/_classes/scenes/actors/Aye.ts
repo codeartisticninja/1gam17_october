@@ -42,10 +42,10 @@ export default class Aye extends Actor {
     }
     if (this.state) return super.update();
     if (joy.dir.magnitude) {
-      /*this.velocity.magnitude = joy.dir.x * 8;
+      this.velocity.magnitude = joy.dir.x * 8;
       this.velocity.angle = this.rotation + Math.PI/2*this.scale.x;
-      this.angularVelocity = joy.dir.y * .1;*/
-      this.velocity.copyFrom(joy.dir).multiplyXY(8);
+      this.angularVelocity = joy.dir.y * .1;
+      // this.velocity.copyFrom(joy.dir).multiplyXY(8);
       this.playAnimation("walk");
       this.animationFrame += joy.dir.magnitude;
       if (joy.dir.x < 0) {
