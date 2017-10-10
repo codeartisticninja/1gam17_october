@@ -2,8 +2,10 @@
  "height":13,
  "layers":[
         {
-         "image":"..\/backgrounds\/cubular_space_plugs.png",
+         "image":"..\/backgrounds\/my_kinda_first_pixelart.png",
          "name":"background",
+         "offsetx":135,
+         "offsety":120,
          "opacity":1,
          "type":"imagelayer",
          "visible":true,
@@ -23,8 +25,8 @@
                  "type":"Aye",
                  "visible":true,
                  "width":128,
-                 "x":195,
-                 "y":450
+                 "x":120,
+                 "y":135
                 }],
          "opacity":1,
          "type":"objectgroup",

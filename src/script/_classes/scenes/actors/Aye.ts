@@ -25,7 +25,6 @@ export default class Aye extends Actor {
     this.addAnimation("walk",  [ 8, 9,10,11,12,13,14,15], 0);
     this.addAnimation("do",    [16,17,18,19,20,21,22,23]);
     this.addAnimation("sleep", [24,25,26,27,28,29,30,31]);
-    this.position.set(this.scene.size.x/2, this.scene.size.y/2);
     this.order = 1024;
   }
 
@@ -43,9 +42,10 @@ export default class Aye extends Actor {
     }
     if (this.state) return super.update();
     if (joy.dir.magnitude) {
-      this.velocity.magnitude = joy.dir.x * 8;
+      /*this.velocity.magnitude = joy.dir.x * 8;
       this.velocity.angle = this.rotation + Math.PI/2*this.scale.x;
-      this.angularVelocity = joy.dir.y * .1;
+      this.angularVelocity = joy.dir.y * .1;*/
+      this.velocity.copyFrom(joy.dir).multiplyXY(8);
       this.playAnimation("walk");
       this.animationFrame += joy.dir.magnitude;
       if (joy.dir.x < 0) {
