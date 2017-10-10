@@ -61,6 +61,7 @@ export default class Aye extends Actor {
     }
     super.update();
     this.scene.camera.copyFrom(this.position).subtractXY(this.scene.game.canvas.width/2, this.scene.game.canvas.height/2);
+    this.scene.cameraRotation = this.rotation;
   }
 
   getPill() {

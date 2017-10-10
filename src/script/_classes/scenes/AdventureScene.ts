@@ -21,6 +21,7 @@ export default class AdventureScene extends Scene {
     super(game, map);
     this.actorTypes["Aye"] = Aye;
     this.actorTypes["ParticleEmitter"] = ParticleEmitter;
+    this.boundCamera=false;
   }
 
   reset() {

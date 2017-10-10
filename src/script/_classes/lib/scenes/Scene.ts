@@ -12,7 +12,7 @@ import Text        from "./actors/Text";
 /**
  * Scene class
  * 
- * @date 04-oct-2017
+ * @date 10-oct-2017
  */
 
 
@@ -26,6 +26,7 @@ export default class Scene {
   public size:Vector2 = new Vector2();
   public gravity:Vector2 = new Vector2();
   public camera:Vector2 = new Vector2();
+  public cameraRotation:number=0;
   public boundCamera=true;
   public mouse:Vector2 = new Vector2();
   public mapData:any;
@@ -111,6 +112,11 @@ export default class Scene {
     for (var actor of this.actors) {
       if (actor.visible) {
         g.save();
+        if (this.cameraRotation) {
+          g.translate(this.game.canvas.width/2, this.game.canvas.height/2);
+          g.rotate(-this.cameraRotation);
+          g.translate(-this.game.canvas.width/2, -this.game.canvas.height/2);
+        }
         g.translate(-this.camera.x*actor.parallax, -this.camera.y*actor.parallax);
         g.translate(actor.position.x, actor.position.y);
         g.rotate(actor.rotation);
