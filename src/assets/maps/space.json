@@ -1,5 +1,14 @@
-{ "height":9,
+{ "height":13,
  "layers":[
+        {
+         "image":"..\/backgrounds\/cubular_space_plugs.png",
+         "name":"background",
+         "opacity":1,
+         "type":"imagelayer",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
         {
          "draworder":"topdown",
          "name":"objects",
@@ -31,8 +40,8 @@
         {
          "columns":4,
          "firstgid":1,
-         "image":"..\/sprites\/aye.png",
-         "imageheight":1024,
+         "image":"..\/sprites\/dark_aye.png",
+         "imageheight":512,
          "imagewidth":512,
          "margin":0,
          "name":"aye",
@@ -44,5 +53,5 @@
  "tilewidth":60,
  "type":"map",
  "version":1,
- "width":16
+ "width":21
 }
