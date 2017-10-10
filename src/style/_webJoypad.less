@@ -1,0 +1,141 @@
+#webJoypad {
+  @active-delay: 0s;
+  @active-duration: .5s;
+  @inactive-delay: 0s;
+  @inactive-duration: .5s;
+  background: url("./disable_joy.png") center top no-repeat;
+  box-sizing: content-box;
+  opacity: .5;
+  overflow: visible;
+  position: fixed;
+  transition: 1s 0s;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 16px;
+  z-index: 1000;
+
+  &.hidden {
+    transition: 1s @inactive-delay;
+    bottom: -6em;
+  }
+
+
+  .left, .right {
+    /* background-color: transparent;
+    border: 1px solid black; */
+    font-size: 1em;
+    opacity: 0.25;
+    overflow: hidden;
+    position: absolute;
+    touch-action: none;
+    transition: @active-duration @active-delay;
+    transition: 8s 4s opacity;
+    bottom: 32px;
+    width: 100vw;
+    height: 50vh;
+
+    .slider, .fire {
+      background-color: black;
+      border: 1px solid white;
+      border-radius: 10em;
+      // margin: 33vh 16vw;
+      position: absolute;
+      /* transition: left @active-duration @active-delay,
+                  right @active-duration @active-delay,
+                  bottom @active-duration @active-delay; */
+      bottom: 0;
+      width: 3em;
+      height: 3em;
+      
+      .knob {
+        background: url("./arrows.png") center no-repeat white;
+        border: 1px solid black;
+        border-radius: 10em;
+        box-sizing: border-box;
+        position: absolute;
+        margin: -.5em;
+        left: 1em;
+        top: 1em;
+        width: 2em;
+        height: 2em;
+      }
+    }
+    .fire {
+      background: url("./x.png") center no-repeat black;
+      // margin: 50vh 4vw;
+      width: 2em;
+      height: 2em;
+      &.pending {
+        background-color: #700;
+      }
+      &.pressed {
+        background-color: #f00;
+      }
+    }
+  }
+  .left {
+    border-right-width: 0;
+    display: none;
+    left: 0;
+
+    .slider, .fire {
+      left: 0;
+    }
+  }
+  .right {
+    border-left-width: 0;
+    right: 0;
+
+    .slider, .fire {
+      right: 0;
+    }
+  }
+
+
+  @media screen and (min-width: 400px) {
+    .left, .right {
+      display: block;
+      bottom: 0;
+      width: 40vw;
+      height: 99vh;
+    }
+
+    &.rc {
+      .left .knob {
+        background: url("./h_arrows.png") center no-repeat white;
+      }
+      .right .knob {
+        background: url("./v_arrows.png") center no-repeat white;
+      }
+      
+    }
+    
+    &.gc {
+      .right .slider {
+        display: none;
+      }
+    }
+  }
+
+
+  &.inactive {
+    height: 0;
+
+    .left, .right {
+      /* background-color: black;
+      border-width: 1px; */
+      opacity: 1;
+      transition: @inactive-duration @inactive-delay;
+      transition: 0s 0s opacity;
+      width: 5em;
+      height: 5em;
+
+      .slider, .fire {
+        transition: margin @inactive-duration @inactive-delay;
+        margin: -.5em;
+      }
+    }
+  }
+              
+}
