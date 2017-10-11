@@ -14,15 +14,17 @@ export default class Aye extends Actor {
   public target:Vector2|null;
   public distanceToTarget:Vector2 = new Vector2();
   public dir:Vector2 = new Vector2();
-  public emotions=0;
+  public jumping=true;
 
   constructor(scene:Scene, obj:any) {
     super(scene, obj);
     this.shape = "circle";
-    this.setAnchor(this.size.x/2, this.size.y-15);
-    this.size.set(60, 30);
+    this.setAnchor(this.size.x/2, this.size.y-32);
+    this.size.set(32);
+    this.gravity = Vector2.dispense();
     this.addAnimation("idle",  [ 0, 1, 2, 3, 4, 5, 6, 7]);
     this.addAnimation("walk",  [ 8, 9,10,11,12,13,14,15], 0);
+    this.addAnimation("jump",  [ 13 ]);
     this.addAnimation("do",    [16,17,18,19,20,21,22,23]);
     this.addAnimation("sleep", [24,25,26,27,28,29,30,31]);
     this.order = 1024;
@@ -41,11 +43,14 @@ export default class Aye extends Actor {
       }
     }
     if (this.state) return super.update();
-    if (joy.dir.magnitude) {
-      this.velocity.magnitude = joy.dir.x * 8;
-      this.velocity.angle = this.rotation + Math.PI/2*this.scale.x;
-      this.angularVelocity = joy.dir.y * .1;
-      // this.velocity.copyFrom(joy.dir).multiplyXY(8);
+    let angleDiff = this.gravity.angle + Math.PI - this.rotation;
+    while (angleDiff > Math.PI) angleDiff -= 2*Math.PI;
+    while (angleDiff < -Math.PI) angleDiff += 2*Math.PI;
+    this.angularVelocity = angleDiff * .333;
+    if (joy.dir.magnitude && !this.jumping) {
+      this.velocity.copyFrom(joy.dir).multiplyXY(8);
+      this.velocity.angle += this.rotation;
+      if (Math.round(joy.dir.y) < 0) this.jump();
       this.playAnimation("walk");
       this.animationFrame += joy.dir.magnitude;
       if (joy.dir.x < 0) {
@@ -54,21 +59,31 @@ export default class Aye extends Actor {
       if (joy.dir.x > 0) {
         this.scale.x = 1;
       }
+    } else if (this.jumping) {
+      this.playAnimation("jump");
     } else {
-      this.velocity.set(0);
-      this.angularVelocity=0;
       this.playAnimation("idle");
     }
     super.update();
     this.scene.camera.copyFrom(this.position).subtractXY(this.scene.game.canvas.width/2, this.scene.game.canvas.height/2);
-    this.scene.cameraRotation = this.rotation;
+    angleDiff = this.rotation - this.scene.cameraRotation;
+    while (angleDiff > Math.PI) angleDiff -= 2*Math.PI;
+    while (angleDiff < -Math.PI) angleDiff += 2*Math.PI;
+    this.scene.cameraRotation += angleDiff * .333;
+    // this.scene.cameraRotation = this.rotation;
   }
 
-  getPill() {
-    this.emotions++;
-    this.scene.setAlarm(this.scene.game.frameRate*60,()=>{
-      this.emotions--;
-    });
+  render() {
+    let g = this.scene.game.ctx;
+    g.strokeStyle = "red";
+    return super.render();
+  }
+
+  jump() {
+    if (this.jumping) return;
+    this.velocity.magnitude = 24;
+    // this.velocity.angle = this.rotation;
+    this.jumping = true;
   }
 
   goTo(dest:Vector2) {
