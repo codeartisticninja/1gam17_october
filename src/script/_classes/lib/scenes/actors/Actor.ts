@@ -8,7 +8,7 @@ import lazyJSON from "../../utils/lazyJSON";
 /**
  * Actor class
  * 
- * @date 04-oct-2017
+ * @date 11-oct-2017
  */
 
 interface Animation {
@@ -50,6 +50,7 @@ export default class Actor {
       this.name = obj.name;
       this.type = obj.type;
       this.visible = obj.visible;
+      if (obj.ellipse) this.shape = "circle";
       if (obj.gid != null) {
         this.sprite = this.scene.getSpriteByGid(obj.gid);
         if (this.frame < 0) {
