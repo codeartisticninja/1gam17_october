@@ -9,18 +9,20 @@ import Vector2     from "../lib/utils/Vector2";
 
 import ParticleEmitter from "../lib/scenes/actors/ParticleEmitter";
 import Aye             from "./actors/Aye";
+import Cog             from "./actors/Cog";
 
 /**
- * AdventureScene class
+ * MachineScene class
  */
 
-export default class AdventureScene extends Scene {
+export default class MachineScene extends Scene {
   public game:myGame;
   public script:Script;
 
   constructor(game:myGame, map:string) {
     super(game, map);
     this.actorTypes["Aye"] = Aye;
+    this.actorTypes["Cog"] = Cog;
     this.actorTypes["ParticleEmitter"] = ParticleEmitter;
     this.boundCamera=false;
   }
@@ -54,6 +56,7 @@ export default class AdventureScene extends Scene {
     }
     super.update();
     this.onOverlap(this.actorsByType["Aye"], this.actorsByType["Cog"], this._ayeMeetsCog);
+    this.onOverlap(this.actorsByType["Cog"], this.actorsByType["Cog"], this._cogMeetsCog);
     diff.recycle();
   }
 
@@ -77,9 +80,16 @@ export default class AdventureScene extends Scene {
     }
   }
 
-  private _ayeMeetsCog(aye:Aye, cog:Actor) {
+  private _ayeMeetsCog(aye:Aye, cog:Cog) {
     aye.snapToEdge(cog);
     aye.jumping = false;
     aye.velocity.set(0);
+  }
+
+  private _cogMeetsCog(cog1:Cog, cog2:Cog) {
+    if ((cog1.leader && cog1.leader !== cog2) || cog1.angularVelocity) {
+      cog2.leader = cog1;
+      cog2.snapToEdge(cog1);
+    }
   }
 }

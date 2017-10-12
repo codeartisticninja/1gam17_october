@@ -11,7 +11,7 @@
          "y":0
         }, 
         {
-         "draworder":"topdown",
+         "draworder":"index",
          "name":"objects",
          "objects":[
                 {
@@ -109,6 +109,86 @@
                  "width":120,
                  "x":420,
                  "y":450
+                }, 
+                {
+                 "gid":17,
+                 "height":92,
+                 "id":13,
+                 "name":"",
+                 "properties":
+                    {
+                     "angularVelocity":0.05
+                    },
+                 "propertytypes":
+                    {
+                     "angularVelocity":"float"
+                    },
+                 "rotation":0,
+                 "type":"Cog",
+                 "visible":true,
+                 "width":92,
+                 "x":75,
+                 "y":345
+                }, 
+                {
+                 "gid":18,
+                 "height":138,
+                 "id":20,
+                 "name":"",
+                 "rotation":0,
+                 "type":"Cog",
+                 "visible":true,
+                 "width":138,
+                 "x":45,
+                 "y":450
+                }, 
+                {
+                 "gid":19,
+                 "height":184,
+                 "id":21,
+                 "name":"",
+                 "rotation":0,
+                 "type":"Cog",
+                 "visible":true,
+                 "width":184,
+                 "x":60,
+                 "y":585
+                }, 
+                {
+                 "gid":20,
+                 "height":230,
+                 "id":22,
+                 "name":"",
+                 "rotation":0,
+                 "type":"Cog",
+                 "visible":true,
+                 "width":230,
+                 "x":15,
+                 "y":735
+                }, 
+                {
+                 "gid":21,
+                 "height":276,
+                 "id":23,
+                 "name":"",
+                 "rotation":0,
+                 "type":"Cog",
+                 "visible":true,
+                 "width":276,
+                 "x":60,
+                 "y":855
+                }, 
+                {
+                 "gid":22,
+                 "height":321,
+                 "id":24,
+                 "name":"",
+                 "rotation":0,
+                 "type":"Cog",
+                 "visible":true,
+                 "width":321,
+                 "x":120,
+                 "y":1020
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -116,7 +196,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":13,
+ "nextobjectid":25,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.0.3",
@@ -134,6 +214,84 @@
          "tilecount":16,
          "tileheight":128,
          "tilewidth":128
+        }, 
+        {
+         "columns":1,
+         "firstgid":17,
+         "image":"..\/sprites\/cog3.png",
+         "imageheight":92,
+         "imagewidth":92,
+         "margin":0,
+         "name":"cog3",
+         "spacing":0,
+         "tilecount":1,
+         "tileheight":92,
+         "tilewidth":92
+        }, 
+        {
+         "columns":1,
+         "firstgid":18,
+         "image":"..\/sprites\/cog5.png",
+         "imageheight":138,
+         "imagewidth":138,
+         "margin":0,
+         "name":"cog5",
+         "spacing":0,
+         "tilecount":1,
+         "tileheight":138,
+         "tilewidth":138
+        }, 
+        {
+         "columns":1,
+         "firstgid":19,
+         "image":"..\/sprites\/cog7.png",
+         "imageheight":184,
+         "imagewidth":184,
+         "margin":0,
+         "name":"cog7",
+         "spacing":0,
+         "tilecount":1,
+         "tileheight":184,
+         "tilewidth":184
+        }, 
+        {
+         "columns":1,
+         "firstgid":20,
+         "image":"..\/sprites\/cog9.png",
+         "imageheight":230,
+         "imagewidth":230,
+         "margin":0,
+         "name":"cog9",
+         "spacing":0,
+         "tilecount":1,
+         "tileheight":230,
+         "tilewidth":230
+        }, 
+        {
+         "columns":1,
+         "firstgid":21,
+         "image":"..\/sprites\/cog11.png",
+         "imageheight":276,
+         "imagewidth":276,
+         "margin":0,
+         "name":"cog11",
+         "spacing":0,
+         "tilecount":1,
+         "tileheight":276,
+         "tilewidth":276
+        }, 
+        {
+         "columns":1,
+         "firstgid":22,
+         "image":"..\/sprites\/cog13.png",
+         "imageheight":321,
+         "imagewidth":321,
+         "margin":0,
+         "name":"cog13",
+         "spacing":0,
+         "tilecount":1,
+         "tileheight":321,
+         "tilewidth":321
         }],
  "tilewidth":60,
  "type":"map",
