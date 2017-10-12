@@ -8,7 +8,7 @@ import lazyJSON from "../../utils/lazyJSON";
 /**
  * Actor class
  * 
- * @date 11-oct-2017
+ * @date 12-oct-2017
  */
 
 interface Animation {
@@ -82,6 +82,9 @@ export default class Actor {
   }
   get radius() {
     return (this.size.x/2) * Math.abs(this.scale.x);
+  }
+  get circumference() {
+    return Math.PI * 2 * this.radius;
   }
 
   update() {
