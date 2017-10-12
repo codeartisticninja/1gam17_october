@@ -3,7 +3,7 @@
 /**
  * Vector2 class
  * 
- * @date 04-oct-2017
+ * @date 12-oct-2017
  */
 
 var pool:Vector2[]=[];
@@ -91,6 +91,12 @@ export default class Vector2 {
       this.multiplyXY(1/l, undefined, result);
     }
     return result;
+  }
+
+  perp(result=this) {
+    let {x,y} = this;
+    result.x = y;
+    result.y = -x;
   }
 
 }
