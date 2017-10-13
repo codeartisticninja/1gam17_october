@@ -18,6 +18,20 @@ export default class Cog extends Actor {
     this.teeth = Math.round(this.circumference/(12*3*2));
   }
 
+  get rotationSpeed():number {
+    if (this.angularVelocity) {
+      return this.angularVelocity;
+    }
+    if (this.leader) {
+      return -this.leader.rotationSpeed * (this.leader.teeth/this.teeth);
+    }
+    return 0;
+  }
+
+  get edgeSpeed() {
+    return (this.rotationSpeed/Math.PI*2) * this.circumference;
+  }
+
   update() {
     super.update();
     if (this.leader) {

@@ -17,7 +17,6 @@ import Cog             from "./actors/Cog";
 
 export default class MachineScene extends Scene {
   public game:myGame;
-  public script:Script;
 
   constructor(game:myGame, map:string) {
     super(game, map);
@@ -38,14 +37,13 @@ export default class MachineScene extends Scene {
     for (let aye of this.actorsByType["Aye"]) {
       aye.gravity.set(0);
       let overlap=false;
-      for (let cog of this.actorsByType["Cog"]) {
+      for (let cog of <Cog[]>this.actorsByType["Cog"]) {
         diff.copyFrom(cog.position).subtract(aye.position);
         diff.magnitude -= Math.min(cog.radius, diff.magnitude-1);
         diff.magnitude = 48/diff.magnitude;
         if (aye.overlapsWith(cog)) {
           if (!overlap) aye.gravity.set(0);
           aye.gravity.add(diff);
-          // aye.snapToEdge(cog);
           (<Aye>aye).jumping = false;
           aye.velocity.set(0);
           overlap=true;
@@ -60,29 +58,15 @@ export default class MachineScene extends Scene {
     diff.recycle();
   }
 
-  click(x:number, y:number) {
-    super.click(x,y);
-    (<Aye>this.actorsByType["Aye"][0]).goTo(this.mouse);
-  }
-
-
   /*
     _privates
   */
 
   private _pillDispenceTO:any;
 
-  private _gotoEnter() {
-    if (this.script && this.script.storyTree) {
-      this.script.goto("#enter");
-    } else {
-      setTimeout(this._gotoEnter.bind(this), 1024);
-    }
-  }
-
   private _ayeMeetsCog(aye:Aye, cog:Cog) {
-    aye.snapToEdge(cog);
     aye.jumping = false;
+    aye.snapToEdge(cog, aye.radius);
     aye.velocity.set(0);
   }
 

@@ -3,7 +3,7 @@
 /**
  * Vector2 class
  * 
- * @date 12-oct-2017
+ * @date 13-oct-2017
  */
 
 var pool:Vector2[]=[];
@@ -97,6 +97,7 @@ export default class Vector2 {
     let {x,y} = this;
     result.x = y;
     result.y = -x;
+    return result;
   }
 
 }
