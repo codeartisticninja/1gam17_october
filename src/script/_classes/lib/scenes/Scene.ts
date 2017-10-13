@@ -126,6 +126,22 @@ export default class Scene {
         g.restore();
       }
     }
+    if (this.game.debug) {
+      g.globalAlpha = 1;
+      for (var actor of this.actors) {
+        g.save();
+        if (this.cameraRotation) {
+          g.translate(this.game.canvas.width/2, this.game.canvas.height/2);
+          g.rotate(-this.cameraRotation);
+          g.translate(-this.game.canvas.width/2, -this.game.canvas.height/2);
+        }
+        g.translate(-this.camera.x*actor.parallax, -this.camera.y*actor.parallax);
+        g.translate(actor.position.x, actor.position.y);
+        g.scale(actor.scale.x, actor.scale.y);
+        actor.renderDebug();
+        g.restore();
+      }
+    }
   }
 
   createActor(obj:any) {

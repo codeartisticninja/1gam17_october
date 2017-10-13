@@ -135,21 +135,38 @@ export default class Actor {
   render() {
     if (this.sprite)
       this.sprite.draw(this.frame, 0, this.offset);
-    if (this.scene.game.debug) {
-      let g = this.scene.game.ctx;
-      g.rotate(-this.rotation);
-      switch (this.shape) {
-        case "circle":
-          g.beginPath();
-          g.arc(0, 0, this.size.x/2, 0, 2*Math.PI);
-          g.stroke();
-          break;
+  }
+
+  renderDebug() {
+    let g = this.scene.game.ctx;
+    g.strokeStyle = "blue";
+    switch (this.shape) {
+      case "circle":
+      g.beginPath();
+      g.arc(0, 0, this.size.x/2, 0, 2*Math.PI);
+      g.stroke();
+      break;
       
-        default:
-          g.strokeRect(-(this.size.x/2), -(this.size.y/2), this.size.x, this.size.y);
-          break;
-      }
-      g.rotate(this.rotation);
+      default:
+      g.strokeRect(-(this.size.x/2), -(this.size.y/2), this.size.x, this.size.y);
+      break;
+    }
+    g.beginPath();
+    g.moveTo(Math.sin(this.rotation)*this.size.x/2, -Math.cos(this.rotation)*this.size.y/2);
+    g.lineTo(Math.sin(this.rotation)*this.size.x/3, -Math.cos(this.rotation)*this.size.y/3);
+    g.lineTo(Math.sin(this.rotation+.25)*this.size.x/3, -Math.cos(this.rotation+.25)*this.size.y/3);
+    g.stroke();
+    g.strokeStyle = "green";
+    g.beginPath();
+    g.moveTo(0,0);
+    g.lineTo(this.velocity.x, this.velocity.y);
+    g.stroke();
+    if (this.gravity) {
+      g.strokeStyle = "red";
+      g.beginPath();
+      g.moveTo(0,0);
+      g.lineTo(this.velocity.x, this.velocity.y);
+      g.stroke();
     }
   }
 
@@ -177,30 +194,30 @@ export default class Actor {
           actor.top, actor.left, actor.bottom, actor.right);
     }
   }
-  snapToEdge(obstruction:Actor) {
+  snapToEdge(obstruction:Actor, overlap=0) {
     var x=0,y=Infinity,l;
     switch (this.shape) {
       case "circle":
         x = this.position.x - obstruction.position.x;
         y = this.position.y - obstruction.position.y;
         l = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
-        l /= this.radius + obstruction.radius;
+        l /= this.radius + obstruction.radius - overlap;
         x /= l; y /= l;
         this.position.copyFrom(obstruction.position).addXY(x||0,y||0);
         break;
     
       default:
         if (Math.abs(x+y) > Math.abs(obstruction.right - this.left)) {
-          x = obstruction.right - this.left; y = 0;
+          x = obstruction.right - this.left - overlap; y = 0;
         }
         if (Math.abs(x+y) > Math.abs(obstruction.left - this.right)) {
-          x = obstruction.left - this.right; y = 0;
+          x = obstruction.left - this.right + overlap; y = 0;
         }
         if (Math.abs(x+y) > Math.abs(obstruction.bottom - this.top)) {
-          x = 0; y = obstruction.bottom - this.top;
+          x = 0; y = obstruction.bottom - this.top - overlap;
         }
         if (Math.abs(x+y) > Math.abs(obstruction.top - this.bottom)) {
-          x = 0; y = obstruction.top - this.bottom;
+          x = 0; y = obstruction.top - this.bottom + overlap;
         }
         this.position.addXY(x,y);
         break;
