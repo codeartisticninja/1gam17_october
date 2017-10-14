@@ -40,6 +40,7 @@ export default class Aye extends Actor {
         this.scale.x = joy.dir.x/Math.abs(joy.dir.x);
         if (this.animation) this.animation.speed = Math.abs(joy.dir.x);
         this.velocity.copyFrom(this.gravity).perp().magnitude = joy.dir.x * 8;
+        this.velocity.add(this.gravity);
       } else {
         this.state = "idle";
       }
@@ -49,7 +50,7 @@ export default class Aye extends Actor {
       
     this.scene.camera.copyFrom(this.position).subtractXY(this.scene.game.canvas.width/2, this.scene.game.canvas.height/2);
     angleDiff.copyFrom(this.rotation).subtract(this.scene.cameraRotation).multiply(.333);
-    // this.scene.cameraRotation.add(angleDiff);
+    this.scene.cameraRotation.add(angleDiff);
     angleDiff.recycle();
   }
 

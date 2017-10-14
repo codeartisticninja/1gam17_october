@@ -37,19 +37,27 @@ export default class MachineScene extends Scene {
     for (let aye of this.actorsByType["Aye"]) {
       aye.gravity.set(0);
       let overlap=false;
-      let closestCog:Cog|null=null;
-      let closesDist:number=Infinity;
+      let closestCogs:Cog[] = [];
+      let closesDists:number[] = [];
       for (let cog of <Cog[]>this.actorsByType["Cog"]) {
         diff.copyFrom(cog.position).subtract(aye.position);
-        diff.magnitude -= Math.min(cog.radius, diff.magnitude);
-        if (diff.magnitude < closesDist) {
-          closestCog = cog;
-          closesDist = diff.magnitude;
+        diff.magnitude -= Math.min(cog.radius, diff.magnitude-1);
+        let i = closestCogs.length;
+        while (closesDists[i-1] > diff.magnitude) i--;
+        closestCogs.splice(i, 0, cog);
+        closesDists.splice(i, 0, diff.magnitude);
+        if (closestCogs.length > 2) {
+          closestCogs.pop();
+          closesDists.pop();
         }
       }
-      if (closestCog) {
-        aye.gravity.add(closestCog.position).subtract(aye.position).normalize();
+      let distSum = 0; closesDists.forEach((dist)=>{ distSum += dist; });
+      for (let cog of closestCogs) {
+        diff.copyFrom(cog.position).subtract(aye.position);
+        diff.magnitude = closesDists.pop() || distSum;
+        aye.gravity.add(diff);
       }
+      aye.gravity.normalize();
     }
     super.update();
     this.onOverlap(this.actorsByType["Aye"], this.actorsByType["Cog"], this._ayeMeetsCog);
