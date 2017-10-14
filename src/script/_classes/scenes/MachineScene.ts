@@ -37,19 +37,18 @@ export default class MachineScene extends Scene {
     for (let aye of this.actorsByType["Aye"]) {
       aye.gravity.set(0);
       let overlap=false;
+      let closestCog:Cog|null=null;
+      let closesDist:number=Infinity;
       for (let cog of <Cog[]>this.actorsByType["Cog"]) {
         diff.copyFrom(cog.position).subtract(aye.position);
-        diff.magnitude -= Math.min(cog.radius, diff.magnitude-1);
-        diff.magnitude = 48/diff.magnitude;
-        if (aye.overlapsWith(cog)) {
-          if (!overlap) aye.gravity.set(0);
-          aye.gravity.add(diff);
-          (<Aye>aye).jumping = false;
-          aye.velocity.set(0);
-          overlap=true;
-        } else if (!overlap) {
-          aye.gravity.add(diff);
+        diff.magnitude -= Math.min(cog.radius, diff.magnitude);
+        if (diff.magnitude < closesDist) {
+          closestCog = cog;
+          closesDist = diff.magnitude;
         }
+      }
+      if (closestCog) {
+        aye.gravity.add(closestCog.position).subtract(aye.position).normalize();
       }
     }
     super.update();
@@ -65,13 +64,13 @@ export default class MachineScene extends Scene {
   private _pillDispenceTO:any;
 
   private _ayeMeetsCog(aye:Aye, cog:Cog) {
-    aye.jumping = false;
     aye.snapToEdge(cog, aye.radius);
     aye.velocity.set(0);
+    if (aye.state === "jump") aye.state = "idle";
   }
 
   private _cogMeetsCog(cog1:Cog, cog2:Cog) {
-    if ((cog1.leader && cog1.leader !== cog2) || cog1.angularVelocity) {
+    if ((cog1.leader && cog1.leader !== cog2) || cog1.angularVelocity.rad) {
       cog2.leader = cog1;
       cog2.snapToEdge(cog1);
     }

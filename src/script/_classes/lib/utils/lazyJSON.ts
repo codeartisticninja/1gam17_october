@@ -4,7 +4,7 @@ import Vector2 from "./Vector2";
 /**
  * lazyJSON module
  * 
- * @date 04-oct-2017
+ * @date 13-oct-2017
  */
 
 module lazyJSON {
@@ -24,12 +24,9 @@ module lazyJSON {
       if (typeof obj[key] === "function") {
         if (!(val instanceof Array)) val = [val];
         obj[key].apply(obj, val);
-      } else if (obj[key] instanceof Vector2) {
-        if (val instanceof Array) {
-          obj[key].set.apply(obj[key], val);
-        } else {
-          obj[key].copyFrom(val);
-        }
+      } else if (typeof val === "object") {
+        if (typeof obj[key] !== "object") obj[key] = {};
+        setProperties(val, obj[key]);
       } else {
         obj[key] = val;
       }

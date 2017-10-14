@@ -3,12 +3,13 @@ import Scene    from "../Scene";
 import Vector2  from "../../utils/Vector2";
 import Sprite   from "./Sprite";
 import lazyJSON from "../../utils/lazyJSON";
+import Angle    from "../../utils/Angle";
 
 
 /**
  * Actor class
  * 
- * @date 12-oct-2017
+ * @date 13-oct-2017
  */
 
 interface Animation {
@@ -26,7 +27,7 @@ export default class Actor {
   public offset:Vector2 = new Vector2();
   public size:Vector2 = new Vector2(32);
   public shape:string = "aabb";
-  public rotation:number=0;
+  public rotation:Angle = new Angle();
   public opacity:number=1;
   public parallax:number=1;
   public order:number=0;
@@ -36,9 +37,9 @@ export default class Actor {
   public gravity:Vector2;
   public momentum:number=1;
   public friction:number=0;
-  public angularVelocity:number=0;
+  public angularVelocity:Angle = new Angle();
   public angularMomentum:number=1;
-  public angularFriction:number=0;
+  public angularFriction:Angle = new Angle();
 
   public animations:{[index:string]:Animation} = {};
   public animation:Animation|null;
@@ -120,15 +121,16 @@ export default class Actor {
       this.position.add(this.velocity);
     }
     if (this.angularMomentum) {
-      if (this.angularFriction) {
-        if (this.angularVelocity > this.angularFriction) {
-          this.angularVelocity -= this.angularFriction;
+      if (this.angularFriction.rad) {
+        this.angularFriction.rad *= this.angularVelocity.rad/Math.abs(this.angularVelocity.rad);
+        if (Math.abs(this.angularVelocity.rad) > Math.abs(this.angularFriction.rad)) {
+          this.angularVelocity.rad -= this.angularFriction.rad;
         } else {
-          this.angularVelocity = 0;
+          this.angularVelocity.rad = 0;
         }
       }
-      this.angularVelocity *= this.angularMomentum;
-      this.rotation += this.angularVelocity;
+      this.angularVelocity.rad *= this.angularMomentum;
+      this.rotation.rad += this.angularVelocity.rad;
     }
   }
 
@@ -152,11 +154,11 @@ export default class Actor {
       break;
     }
     g.beginPath();
-    g.moveTo(Math.sin(this.rotation)*this.size.x/2, -Math.cos(this.rotation)*this.size.y/2);
-    g.lineTo(Math.sin(this.rotation)*this.size.x/3, -Math.cos(this.rotation)*this.size.y/3);
-    g.lineTo(Math.sin(this.rotation+.25)*this.size.x/3, -Math.cos(this.rotation+.25)*this.size.y/3);
+    g.moveTo(Math.sin(this.rotation.rad)*this.size.x/2, -Math.cos(this.rotation.rad)*this.size.y/2);
+    g.lineTo(Math.sin(this.rotation.rad)*this.size.x/3, -Math.cos(this.rotation.rad)*this.size.y/3);
+    g.lineTo(Math.sin(this.rotation.rad+.25)*this.size.x/3, -Math.cos(this.rotation.rad+.25)*this.size.y/3);
     g.stroke();
-    g.strokeStyle = "green";
+    g.strokeStyle = "lime";
     g.beginPath();
     g.moveTo(0,0);
     g.lineTo(this.velocity.x, this.velocity.y);
@@ -165,7 +167,7 @@ export default class Actor {
       g.strokeStyle = "red";
       g.beginPath();
       g.moveTo(0,0);
-      g.lineTo(this.velocity.x, this.velocity.y);
+      g.lineTo(this.gravity.x, this.gravity.y);
       g.stroke();
     }
   }

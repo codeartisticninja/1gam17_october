@@ -117,11 +117,11 @@
                  "name":"",
                  "properties":
                     {
-                     "angularVelocity":0.05
+                     "angularVelocity":"{\n  \"rad\":0.05\n}"
                     },
                  "propertytypes":
                     {
-                     "angularVelocity":"float"
+                     "angularVelocity":"string"
                     },
                  "rotation":0,
                  "type":"Cog",

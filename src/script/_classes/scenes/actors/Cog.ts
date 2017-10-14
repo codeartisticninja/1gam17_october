@@ -19,8 +19,8 @@ export default class Cog extends Actor {
   }
 
   get rotationSpeed():number {
-    if (this.angularVelocity) {
-      return this.angularVelocity;
+    if (this.angularVelocity.rad) {
+      return this.angularVelocity.rad;
     }
     if (this.leader) {
       return -this.leader.rotationSpeed * (this.leader.teeth/this.teeth);
@@ -36,7 +36,7 @@ export default class Cog extends Actor {
     super.update();
     if (this.leader) {
       // this.scale.x = -this.leader.scale.x;
-      this.rotation = -this.leader.rotation * (this.leader.teeth/this.teeth);
+      this.rotation.rad = -this.leader.rotation.rad * (this.leader.teeth/this.teeth);
       this.position.x = this.leader.position.x;
       /* let int = Math.PI/Math.round(this.circumference/(12*3));
       let diff = Vector2.dispense().copyFrom(this.position).subtract(this.leader.position);

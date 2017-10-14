@@ -6,13 +6,14 @@ import Scenery     from "./actors/Scenery";
 import Vector2     from "../utils/Vector2";
 import web         from "../utils/web";
 import lazyJSON    from "../utils/lazyJSON";
+import Angle       from "../utils/Angle";
 
 import Text        from "./actors/Text";
 
 /**
  * Scene class
  * 
- * @date 10-oct-2017
+ * @date 13-oct-2017
  */
 
 
@@ -26,7 +27,7 @@ export default class Scene {
   public size:Vector2 = new Vector2();
   public gravity:Vector2 = new Vector2();
   public camera:Vector2 = new Vector2();
-  public cameraRotation:number=0;
+  public cameraRotation:Angle = new Angle();
   public boundCamera=true;
   public mouse:Vector2 = new Vector2();
   public mapData:any;
@@ -112,14 +113,14 @@ export default class Scene {
     for (var actor of this.actors) {
       if (actor.visible) {
         g.save();
-        if (this.cameraRotation) {
+        if (this.cameraRotation.rad) {
           g.translate(this.game.canvas.width/2, this.game.canvas.height/2);
-          g.rotate(-this.cameraRotation);
+          g.rotate(-this.cameraRotation.rad);
           g.translate(-this.game.canvas.width/2, -this.game.canvas.height/2);
         }
         g.translate(-this.camera.x*actor.parallax, -this.camera.y*actor.parallax);
         g.translate(actor.position.x, actor.position.y);
-        g.rotate(actor.rotation);
+        g.rotate(actor.rotation.rad);
         g.scale(actor.scale.x, actor.scale.y);
         g.globalAlpha = actor.opacity;
         actor.render();
@@ -130,14 +131,14 @@ export default class Scene {
       g.globalAlpha = 1;
       for (var actor of this.actors) {
         g.save();
-        if (this.cameraRotation) {
+        if (this.cameraRotation.rad) {
           g.translate(this.game.canvas.width/2, this.game.canvas.height/2);
-          g.rotate(-this.cameraRotation);
+          g.rotate(-this.cameraRotation.rad);
           g.translate(-this.game.canvas.width/2, -this.game.canvas.height/2);
         }
         g.translate(-this.camera.x*actor.parallax, -this.camera.y*actor.parallax);
         g.translate(actor.position.x, actor.position.y);
-        g.scale(actor.scale.x, actor.scale.y);
+        g.scale(Math.abs(actor.scale.x), Math.abs(actor.scale.y));
         actor.renderDebug();
         g.restore();
       }
