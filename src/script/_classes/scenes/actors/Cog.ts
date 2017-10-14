@@ -35,15 +35,13 @@ export default class Cog extends Actor {
   update() {
     super.update();
     if (this.leader) {
-      // this.scale.x = -this.leader.scale.x;
-      this.rotation.rad = -this.leader.rotation.rad * (this.leader.teeth/this.teeth);
-      this.position.x = this.leader.position.x;
-      /* let int = Math.PI/Math.round(this.circumference/(12*3));
-      let diff = Vector2.dispense().copyFrom(this.position).subtract(this.leader.position);
-      let actualAngle = diff.angle;
-      let nearestAngle = Math.round(actualAngle/int) * int;
-      this.rotation += actualAngle - nearestAngle;
-      diff.recycle(); */
+      if (!this._preRotation) {
+        let v = Vector2.dispense();
+        v.copyFrom(this.position).subtract(this.leader.position);
+        this._preRotation = v.angle + v.angle * (this.leader.teeth/this.teeth);
+        v.recycle();
+      }
+      this.rotation.rad = this._preRotation - this.leader.rotation.rad * (this.leader.teeth/this.teeth);
     }
   }
 
@@ -57,5 +55,6 @@ export default class Cog extends Actor {
   /*
     _privates
   */
+  private _preRotation:number;
 
 }
