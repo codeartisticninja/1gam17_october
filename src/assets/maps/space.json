@@ -189,6 +189,18 @@
                  "width":321,
                  "x":120,
                  "y":1020
+                }, 
+                {
+                 "gid":23,
+                 "height":367,
+                 "id":25,
+                 "name":"",
+                 "rotation":0,
+                 "type":"Cog",
+                 "visible":true,
+                 "width":367,
+                 "x":60,
+                 "y":1410
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -196,7 +208,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":25,
+ "nextobjectid":26,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.0.3",
@@ -292,6 +304,19 @@
          "tilecount":1,
          "tileheight":321,
          "tilewidth":321
+        }, 
+        {
+         "columns":1,
+         "firstgid":23,
+         "image":"..\/sprites\/cog15.png",
+         "imageheight":367,
+         "imagewidth":367,
+         "margin":0,
+         "name":"cog15",
+         "spacing":0,
+         "tilecount":1,
+         "tileheight":367,
+         "tilewidth":367
         }],
  "tilewidth":60,
  "type":"map",
