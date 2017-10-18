@@ -74,9 +74,14 @@ export default class MachineScene extends Scene {
 
   private _ayeMeetsCog(aye:Aye, cog:Cog) {
     if (aye.scale.y > 0.1) aye.scale.y -= 0.03125;
-    aye.snapToEdge(cog, 1);
+    if (aye.state === "stomp") {
+      cog.snapToEdge(aye);
+      cog.inactive += 64;
+    } else {
+      aye.snapToEdge(cog, 1);
+    }
     aye.velocity.set(0);
-    if (aye.state === "jump") aye.state = "idle";
+    if (aye.state === "jump" || aye.state === "stomp") aye.state = "idle";
     let v = Vector2.dispense();
     v.copyFrom(aye.position).subtract(cog.position).angle += cog.rotationSpeed;
     v.add(cog.position);
