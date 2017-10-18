@@ -8,8 +8,9 @@ import Vector2 from "../../lib/utils/Vector2";
  */
 
 export default class Cog extends Actor {
-  public leader:Cog;
+  public leader:Cog|null;
   public teeth:number;
+  public inactive:number=0;
 
   constructor(scene:Scene, obj:any) {
     super(scene, obj);
@@ -33,15 +34,23 @@ export default class Cog extends Actor {
   }
 
   update() {
+    if (this.inactive) {
+      this.leader = null;
+      this._preRotation = null;
+      this.inactive--;
+    }
     super.update();
     if (this.leader) {
-      if (!this._preRotation) {
+      if (this._preRotation == null) {
         let v = Vector2.dispense();
         v.copyFrom(this.position).subtract(this.leader.position);
         this._preRotation = v.angle + v.angle * (this.leader.teeth/this.teeth);
         v.recycle();
       }
       this.rotation.rad = this._preRotation - this.leader.rotation.rad * (this.leader.teeth/this.teeth);
+      this.order = this.leader.order + .125;
+    } else {
+      this._preRotation = null;
     }
   }
 
@@ -55,6 +64,6 @@ export default class Cog extends Actor {
   /*
     _privates
   */
-  private _preRotation:number;
+  private _preRotation:number|null;
 
 }

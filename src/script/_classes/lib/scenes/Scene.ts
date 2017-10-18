@@ -13,14 +13,14 @@ import Text        from "./actors/Text";
 /**
  * Scene class
  * 
- * @date 13-oct-2017
+ * @date 18-oct-2017
  */
 
 
 export default class Scene {
   public actorTypes:{[index:string]:typeof Actor} = {};
-  public actors:Actor[];
-  public actorsByType:{[index:string]: Actor[]};
+  public actors:Actor[] = [];
+  public actorsByType:{[index:string]: Actor[]} = {};
   public actorsByName:{[index:string]: Actor} = {};
   public spritesByFirstGid:Sprite[]=[];
   public spritesByName:{[index:string]: Sprite} = {};
@@ -38,17 +38,19 @@ export default class Scene {
   }
 
   reset() {
-    this.actors = [];
-    this.actorsByType = {};
-    this.clearAllAlarms();
-    if (this.mapUrl) {
-      this.game.loading++;
-      web.get(this.mapUrl, (req:XMLHttpRequest)=>{
-        this.mapData = JSON.parse(req.responseText.trim());
-        this.loadMap();
-        this.game.loaded++;
-      });
-    }
+    setTimeout(()=>{
+      this.actors = [];
+      this.actorsByType = {};
+      this.clearAllAlarms();
+      if (this.mapUrl) {
+        this.game.loading++;
+        web.get(this.mapUrl, (req:XMLHttpRequest)=>{
+          this.mapData = JSON.parse(req.responseText.trim());
+          this.loadMap();
+          this.game.loaded++;
+        });
+      }
+    });
   }
 
   enter() {

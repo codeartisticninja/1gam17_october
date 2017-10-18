@@ -33,6 +33,7 @@ export default class MachineScene extends Scene {
 
 
   update() {
+    if (!this.actorsByType["Aye"]) return;
     let diff = Vector2.dispense();
     for (let aye of this.actorsByType["Aye"]) {
       aye.gravity.set(0);
@@ -72,7 +73,8 @@ export default class MachineScene extends Scene {
   private _pillDispenceTO:any;
 
   private _ayeMeetsCog(aye:Aye, cog:Cog) {
-    aye.snapToEdge(cog, aye.radius);
+    if (aye.scale.y > 0.1) aye.scale.y -= 0.03125;
+    aye.snapToEdge(cog, 1);
     aye.velocity.set(0);
     if (aye.state === "jump") aye.state = "idle";
     let v = Vector2.dispense();
@@ -83,9 +85,10 @@ export default class MachineScene extends Scene {
   }
 
   private _cogMeetsCog(cog1:Cog, cog2:Cog) {
+    if (cog1.inactive || cog2.inactive || cog2.leader) return;
     if ((cog1.leader && cog1.leader !== cog2) || cog1.angularVelocity.rad) {
       cog2.leader = cog1;
-      cog2.snapToEdge(cog1);
+      cog2.snapToEdge(cog1, 1);
     }
   }
 }
