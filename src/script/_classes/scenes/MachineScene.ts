@@ -73,7 +73,7 @@ export default class MachineScene extends Scene {
   private _pillDispenceTO:any;
 
   private _ayeMeetsCog(aye:Aye, cog:Cog) {
-    if (aye.scale.y > 0.1) aye.scale.y -= 0.03125;
+    aye.touchingCogs.push(cog);
     if (aye.state === "stomp") {
       cog.snapToEdge(aye);
       cog.inactive += 64;
