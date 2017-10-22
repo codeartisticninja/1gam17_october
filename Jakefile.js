@@ -76,7 +76,7 @@ task("deploy", ["default"], { async: true }, function () {
     if (trash.indexOf(localFile)>=0) trash.splice(trash.indexOf(localFile), 1);
     if (fs.statSync(localFile).isDirectory()) {
       var oldHash = hashes[localFile];
-      var newHash = true;
+      var newHash = "dir";
       if (oldHash !== newHash) {
         console.log("MKDIR", localFile, "...");
         ftp.mkdir(ftpFile, true, cb);
@@ -100,7 +100,7 @@ task("deploy", ["default"], { async: true }, function () {
     var localFile = trash.pop(),
       ftpFile = ftpDir + localFile.substr(localDir.length);
 
-    if (typeof hashes[localFile] === "boolean") {
+    if (hashes[localFile] === "dir") {
       console.log("RMDIR", localFile, "...");
       ftp.rmdir(ftpFile, true, cb);
     } else {
