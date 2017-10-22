@@ -56,24 +56,25 @@ task("deploy", ["default"], { async: true }, function () {
     deploy = require("./deploy.json"),
     localDir = path.normalize(outDir + ".") + "/",
     ftpDir = servers[deploy.server].rootPath + deploy.path,
-    files = new jake.FileList();
+    files = new jake.FileList(),
+    hashes = {},
+    deletedFiles = [];
 
   try {
-    var hashes = require(outDir+"_ftp.json");
+    hashes = require(outDir+"_hashes.json");
   } catch (err) {
-    var hashes = {};
-  }
-  var trash = [];
-  for (var file in hashes) {
-    trash.push(file);
+    hashes = {};
   }
   files.include([localDir, localDir + "**/*", localDir + "**/.*"]);
   files = excludeIgnoredFiles(files).sort();
+  for (var file in hashes) {
+    if (files.indexOf(file) < 0) deletedFiles.push(file);
+  }
   var upload = function () {
     var localFile = files.shift(),
       ftpFile = ftpDir + localFile.substr(localDir.length);
 
-    if (trash.indexOf(localFile)>=0) trash.splice(trash.indexOf(localFile), 1);
+    if (deletedFiles.indexOf(localFile)>=0) deletedFiles.splice(deletedFiles.indexOf(localFile), 1);
     if (fs.statSync(localFile).isDirectory()) {
       var oldHash = hashes[localFile];
       var newHash = "dir";
@@ -97,7 +98,7 @@ task("deploy", ["default"], { async: true }, function () {
     }
   };
   var emptyTrash = function () {
-    var localFile = trash.pop(),
+    var localFile = deletedFiles.pop(),
       ftpFile = ftpDir + localFile.substr(localDir.length);
 
     if (hashes[localFile] === "dir") {
@@ -112,14 +113,14 @@ task("deploy", ["default"], { async: true }, function () {
   var cb = function (err) {
     if (err && err.code !== 550) {
       fail(err);
+    } else if (deletedFiles.length) {
+      emptyTrash();
     } else if (files.length) {
       upload();
-    } else if (trash.length) {
-      emptyTrash();
     } else {
       ftp.end();
       console.log("...dONE!");
-      fs.writeFileSync(outDir+"_ftp.json", JSON.stringify(hashes, null, 2));
+      fs.writeFileSync(outDir+"_hashes.json", JSON.stringify(hashes, null, 2));
       complete();
     }
   };
