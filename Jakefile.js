@@ -1,46 +1,47 @@
 /*jshint node:true */
 /*globals complete, fail, jake, namespace, task, watchTask */
-var os          = require("os"),
-    fs          = require("fs"),
-    path        = require("path"),
-    http        = require("http"),
-    Watcher     = require("file-watch"),
-    livereload  = require("livereload"),
-    pug         = require("pug"),
-    htmlmin     = require("htmlmin"),
-    less        = require("less"),
-    cssmin      = require("cssmin"),
-    browserify  = require("browserify"),
-    tsify       = require("tsify"),
-    jsmin       = require("jsmin").jsmin,
-    FtpClient   = require("ftp");
+var os = require("os"),
+  fs = require("fs"),
+  path = require("path"),
+  http = require("http"),
+  Watcher = require("file-watch"),
+  livereload = require("livereload"),
+  pug = require("pug"),
+  htmlmin = require("htmlmin"),
+  less = require("less"),
+  cssmin = require("cssmin"),
+  browserify = require("browserify"),
+  tsify = require("tsify"),
+  jsmin = require("jsmin").jsmin,
+  FtpClient = require("ftp"),
+  md5 = require("md5");
 
 /**
  * Jakefile.js
  * For building web apps
  *
- * @date 03-oct-2017
+ * @date 22-oct-2017
  */
-var srcDir        = "./src/",
-    outDir        = "./build/",
-    staticFiles   = null,
-    debug         = false,
-    staticEnabled = true,
-    reloadServer,
-    watchThrottle = {};
+var srcDir = "./src/",
+  outDir = "./build/",
+  staticFiles = null,
+  debug = false,
+  staticEnabled = true,
+  reloadServer,
+  watchThrottle = {};
 
-task("default", [ "clean", "html:pug", "html:md", "css:less", "js:ts", "static:json", "static:all" ]);
+task("default", ["clean", "html:pug", "html:md", "css:less", "js:ts", "static:json", "static:all"]);
 
-task("watch", function(){
-  http.get("http://localhost:8000/").on("error", function(){});
+task("watch", function () {
+  http.get("http://localhost:8000/").on("error", function () { });
   console.log("\nWatching...");
   debug = true;
-  startWatching(".pug",       "html:pug");
-  startWatching(".md",        "html:md");
-  startWatching(".less",      "css:less");
-  startWatching(".ts",        "js:ts");
-  startWatching(".json",      "static:json");
-  startWatching("",           "static:all");
+  startWatching(".pug", "html:pug");
+  startWatching(".md", "html:md");
+  startWatching(".less", "css:less");
+  startWatching(".ts", "js:ts");
+  startWatching(".json", "static:json");
+  startWatching("", "static:all");
 
   reloadServer = livereload.createServer();
   reloadServer.watch(outDir);
@@ -48,80 +49,121 @@ task("watch", function(){
   jake.exec("statify", { printStderr: true });
 });
 
-task("deploy", [ "default" ], {async:true}, function(){
+task("deploy", ["default"], { async: true }, function () {
   console.log("\nDeploying to FTP...");
   var ftp = new FtpClient(),
-      servers = require(os.homedir()+"/ftp_servers.json"),
-      deploy = require("./deploy.json"),
-      localDir = path.normalize(outDir+".")+"/",
-      ftpDir = servers[deploy.server].rootPath + deploy.path,
-      files = new jake.FileList();
+    servers = require(os.homedir() + "/ftp_servers.json"),
+    deploy = require("./deploy.json"),
+    localDir = path.normalize(outDir + ".") + "/",
+    ftpDir = servers[deploy.server].rootPath + deploy.path,
+    files = new jake.FileList();
 
-  files.include([ localDir, localDir+"**/*", localDir+"**/.*" ]);
+  try {
+    var hashes = require(outDir+"_ftp.json");
+  } catch (err) {
+    var hashes = {};
+  }
+  var trash = [];
+  for (var file in hashes) {
+    trash.push(file);
+  }
+  files.include([localDir, localDir + "**/*", localDir + "**/.*"]);
   files = excludeIgnoredFiles(files).sort();
-  var upload = function() {
+  var upload = function () {
     var localFile = files.shift(),
-        ftpFile   = ftpDir + localFile.substr(localDir.length);
+      ftpFile = ftpDir + localFile.substr(localDir.length);
 
-    console.log(localFile, "...");
+    if (trash.indexOf(localFile)>=0) trash.splice(trash.indexOf(localFile), 1);
     if (fs.statSync(localFile).isDirectory()) {
-      ftp.mkdir(ftpFile, true, cb);
+      var oldHash = hashes[localFile];
+      var newHash = true;
+      if (oldHash !== newHash) {
+        console.log("MKDIR", localFile, "...");
+        ftp.mkdir(ftpFile, true, cb);
+        hashes[localFile] = newHash;
+      } else {
+        cb();
+      }
     } else {
-      ftp.put(localFile, ftpFile, cb);
+      var oldHash = hashes[localFile];
+      var newHash = md5(fs.readFileSync(localFile));
+      if (oldHash !== newHash) {
+        console.log("PUT", localFile, "...");
+        ftp.put(localFile, ftpFile, cb);
+        hashes[localFile] = newHash;
+      } else {
+        cb();
+      }
     }
-  },
-  cb = function(err){
-    if (err) {
+  };
+  var emptyTrash = function () {
+    var localFile = trash.pop(),
+      ftpFile = ftpDir + localFile.substr(localDir.length);
+
+    if (typeof hashes[localFile] === "boolean") {
+      console.log("RMDIR", localFile, "...");
+      ftp.rmdir(ftpFile, true, cb);
+    } else {
+      console.log("DELETE", localFile, "...");
+      ftp.delete(ftpFile, cb);
+    }
+    delete hashes[localFile];
+  };
+  var cb = function (err) {
+    if (err && err.code !== 550) {
       fail(err);
     } else if (files.length) {
       upload();
+    } else if (trash.length) {
+      emptyTrash();
     } else {
       ftp.end();
       console.log("...dONE!");
+      fs.writeFileSync(outDir+"_ftp.json", JSON.stringify(hashes, null, 2));
       complete();
     }
   };
-  ftp.on("ready", function(){
+  ftp.on("ready", function () {
     upload();
   });
   ftp.connect(servers[deploy.server]);
 });
 
-task("clean", function() {
+task("clean", function () {
   console.log("\nCleaning build dir...");
   jake.mkdirP(outDir);
   var files = new jake.FileList();
-  files.include(outDir+"*");
-  files.include(outDir+".*");
-  excludeIgnoredFiles(files).forEach(function(file){
+  files.include(outDir + "*");
+  files.include(outDir + ".*");
+  excludeIgnoredFiles(files).forEach(function (file) {
     jake.rmRf(file);
   });
   console.log("...dONE!");
 });
 
-namespace("html", function(){
+namespace("html", function () {
   var data = {}, partials = {};
   try {
-    data = require(srcDir+"data.json");
+    data = require(srcDir + "data.json");
     data.pkg = require("./package.json");
-    var readme  = (""+fs.readFileSync("./README.md")).trim().split("\n");
+    var readme = ("" + fs.readFileSync("./README.md")).trim().split("\n");
     data.appTitle = readme[0];
     data.description = readme[2];
-    data.servers = require(os.homedir()+"/ftp_servers.json");
+    data.servers = require(os.homedir() + "/ftp_servers.json");
     data.deploy = require("./deploy.json");
     data.baseUrl = data.servers[data.deploy.server].rootUrl + data.deploy.path;
-  } catch(e) {}
+  } catch (e) { }
   var pug_opts = {
     pretty: true
   };
   var htmlmin_opts = {};
 
-  task("pug", function(){
+  task("pug", function () {
     console.log("\nCompiling Pug...");
     data.files = fileList(srcDir);
-    fileTypeList(".pug").forEach(function(inFile){
+    fileTypeList(".pug").forEach(function (inFile) {
       var outFile = outputFile(inFile, ".html"),
-          output  = ""+fs.readFileSync(inFile);
+        output = "" + fs.readFileSync(inFile);
       console.log(inFile, "->", outFile);
 
       setActive(outFile, data);
@@ -135,13 +177,13 @@ namespace("html", function(){
     });
     console.log("...dONE!");
   });
-  task("md", function(){
+  task("md", function () {
     jake.Task["html:pug"].invoke();
     console.log("\nCompiling Markdown...");
     data.files = fileList(srcDir);
-    fileTypeList(".md").forEach(function(inFile){
+    fileTypeList(".md").forEach(function (inFile) {
       var outFile = outputFile(inFile, ".html"),
-          output  = ""+fs.readFileSync(inFile);
+        output = "" + fs.readFileSync(inFile);
       console.log(inFile, "->", outFile);
 
       setActive(outFile, data);
@@ -149,7 +191,7 @@ namespace("html", function(){
       data.title = lines[0].trim();
       pug_opts.filename = inFile;
       output = output.replace(/\n/g, "\n    ");
-      output = "include _markdown\n  :markdown-it\n    "+output;
+      output = "include _markdown\n  :markdown-it\n    " + output;
       output = pug.compile(output, pug_opts);
       output = output(data);
 
@@ -161,28 +203,28 @@ namespace("html", function(){
   });
 });
 
-namespace("css", function(){
+namespace("css", function () {
   var less_opts = {};
 
-  task("less", {async:true}, function(){
+  task("less", { async: true }, function () {
     console.log("\nCompiling LESS...");
     var filesLeft = fileTypeList(".less").length;
     if (!filesLeft) { console.log("...dONE!"); complete(); }
-    fileTypeList(".less").forEach(function(inFile){
+    fileTypeList(".less").forEach(function (inFile) {
       var outFile = outputFile(inFile, ".css"),
-          output  = ""+fs.readFileSync(inFile);
+        output = "" + fs.readFileSync(inFile);
       console.log(inFile, "->", outFile);
 
       less_opts.filename = inFile;
       less.render(output, less_opts).then(
-        function(o) {
+        function (o) {
           var output = o.css;
           if (!debug) { output = cssmin(output); }
           jake.mkdirP(path.dirname(outFile));
           fs.writeFileSync(outFile, output);
           if (--filesLeft === 0) { console.log("...dONE!"); complete(); }
         },
-        function(err){
+        function (err) {
           console.log("\u0007LESS compilation failed!\t" + err);
           fail();
         }
@@ -191,28 +233,28 @@ namespace("css", function(){
   });
 });
 
-namespace("js", function(){
+namespace("js", function () {
   var browserify_opts = {
-        debug: true
-      },
-      tsify_opts = require("./tsconfig.json").compilerOptions;
+    debug: true
+  },
+    tsify_opts = require("./tsconfig.json").compilerOptions;
 
-  task("ts", {async:true}, function(){
+  task("ts", { async: true }, function () {
     console.log("\nCompiling TypeScript...");
     var filesLeft = fileTypeList(".ts").length;
     if (!filesLeft) { console.log("...dONE!"); complete(); }
-    fileTypeList(".ts").forEach(function(inFile){
+    fileTypeList(".ts").forEach(function (inFile) {
       var outFile = outputFile(inFile, ".js");
       console.log(inFile, "->", outFile);
 
       browserify(browserify_opts)
         .add(inFile)
         .plugin(tsify, tsify_opts)
-        .bundle(function(err, buf){
+        .bundle(function (err, buf) {
           if (err) {
             fail("\u0007TypeScript err!\t" + err);
           } else {
-            var output = ""+buf;
+            var output = "" + buf;
             if (!debug) { output = jsmin(output); }
             jake.mkdirP(path.dirname(outFile));
             fs.writeFileSync(outFile, output);
@@ -224,12 +266,12 @@ namespace("js", function(){
   });
 });
 
-namespace("static", function(){
-  task("json", function(){
+namespace("static", function () {
+  task("json", function () {
     console.log("\nReencoding JSON...");
-    fileTypeList(".json").forEach(function(inFile){
+    fileTypeList(".json").forEach(function (inFile) {
       var outFile = outputFile(inFile, ".json"),
-          output  = ""+fs.readFileSync(inFile);
+        output = "" + fs.readFileSync(inFile);
       console.log(inFile, "->", outFile);
 
       if (debug) {
@@ -244,11 +286,11 @@ namespace("static", function(){
     console.log("...dONE!");
   });
 
-  task("all", function(){
+  task("all", function () {
     console.log("\nCopying static files...");
     fileTypeList([".pug", ".md", ".less", ".ts"]);
     staticFiles.resolve();
-    excludeIgnoredFiles(staticFiles.toArray()).forEach(function(inFile){
+    excludeIgnoredFiles(staticFiles.toArray()).forEach(function (inFile) {
       var outFile = outputFile(inFile);
       if (fs.statSync(inFile).isFile()) {
         jake.mkdirP(path.dirname(outFile));
@@ -259,23 +301,23 @@ namespace("static", function(){
   });
 });
 
-task("upgrade", { async:true }, function() {
+task("upgrade", { async: true }, function () {
   console.log("\nUpgrading packages...");
   var packages = require("./package.json");
   var commands = [];
-  for(var pkg in packages.dependencies) {
-    commands.push("npm -S remove "+pkg);
+  for (var pkg in packages.dependencies) {
+    commands.push("npm -S remove " + pkg);
   }
-  for(var pkg in packages.devDependencies) {
-    commands.push("npm -D remove "+pkg);
+  for (var pkg in packages.devDependencies) {
+    commands.push("npm -D remove " + pkg);
   }
-  for(var pkg in packages.dependencies) {
-    commands.push("npm -S install "+pkg);
+  for (var pkg in packages.dependencies) {
+    commands.push("npm -S install " + pkg);
   }
-  for(var pkg in packages.devDependencies) {
-    commands.push("npm -D install "+pkg);
+  for (var pkg in packages.devDependencies) {
+    commands.push("npm -D install " + pkg);
   }
-  jake.exec(commands, {printStdout: true, printStderr: true}, function () {
+  jake.exec(commands, { printStdout: true, printStderr: true }, function () {
     console.log("...dONE!");
     complete();
   });
@@ -287,19 +329,19 @@ task("upgrade", { async:true }, function() {
 function fileTypeList(suffixes, inverse) {
   var files = new jake.FileList();
   if (typeof suffixes === "string") {
-    suffixes = [ suffixes ];
+    suffixes = [suffixes];
   }
   if (!staticFiles) {
     staticFiles = new jake.FileList();
-    staticFiles.include(srcDir+"**/*");
-    staticFiles.include(srcDir+"**/.*");
+    staticFiles.include(srcDir + "**/*");
+    staticFiles.include(srcDir + "**/.*");
   }
-  suffixes.forEach(function(suffix){
-    files.include(srcDir+"**/*"+suffix);
-    files.include(srcDir+"**/.*"+suffix);
+  suffixes.forEach(function (suffix) {
+    files.include(srcDir + "**/*" + suffix);
+    files.include(srcDir + "**/.*" + suffix);
     if (suffix) {
-      staticFiles.exclude(srcDir+"**/*"+suffix);
-      staticFiles.exclude(srcDir+"**/.*"+suffix);
+      staticFiles.exclude(srcDir + "**/*" + suffix);
+      staticFiles.exclude(srcDir + "**/.*" + suffix);
     }
   });
   return excludeIgnoredFiles(files.toArray(), inverse);
@@ -307,8 +349,8 @@ function fileTypeList(suffixes, inverse) {
 
 function excludeIgnoredFiles(files, inverse) {
   var included = [],
-      excluded = [];
-  files.forEach(function(file){
+    excluded = [];
+  files.forEach(function (file) {
     if (file.indexOf("/_") === -1) {
       included.push(file);
     } else {
@@ -323,8 +365,8 @@ function excludeIgnoredFiles(files, inverse) {
 }
 
 function outputFile(file, suffix) {
-  var basename  = path.basename(file),
-      dir       = path.dirname(file)+path.sep;
+  var basename = path.basename(file),
+    dir = path.dirname(file) + path.sep;
   dir = path.normalize(dir);
   dir = path.normalize(outDir) + dir.substr(path.normalize(srcDir).length);
   if (suffix) {
@@ -335,18 +377,18 @@ function outputFile(file, suffix) {
       basename += suffix;
     }
   }
-  return dir+basename;
+  return dir + basename;
 }
 
 function startWatching(suffix, task) {
   var watchFiles = new jake.FileList(),
-      watcher = new Watcher();
-  watchFiles.include(srcDir+"**/*"+suffix);
+    watcher = new Watcher();
+  watchFiles.include(srcDir + "**/*" + suffix);
   watcher.watch(task, watchFiles.toArray());
-  watcher.on(task, function(){
+  watcher.on(task, function () {
     clearTimeout(watchThrottle[task]);
     clearTimeout(watchThrottle["static:all"]);
-    watchThrottle[task] = setTimeout(function(){
+    watchThrottle[task] = setTimeout(function () {
       clearTimeout(watchThrottle["static:all"]);
       jake.Task[task].execute();
     }, 100);
@@ -357,7 +399,7 @@ function startWatching(suffix, task) {
 function setActive(file, data) {
   if (!data.nav) return;
   var thisFile = path.parse(file);
-  data.nav.forEach(function(link){
+  data.nav.forEach(function (link) {
     if (!link.href) return;
     var linkFile = path.parse(link.href);
     if (linkFile.name === thisFile.name) {
@@ -374,19 +416,19 @@ function setActive(file, data) {
 
 function fileList(dir) {
   var files = fs.readdirSync(dir),
-      out = { "*": [] };
-  files.forEach(function(file) {
-    var stat = fs.statSync(dir+file);
+    out = { "*": [] };
+  files.forEach(function (file) {
+    var stat = fs.statSync(dir + file);
     if (stat.isDirectory()) {
-      out[file] = fileList(dir+file+"/");
+      out[file] = fileList(dir + file + "/");
     } else {
       var dot = file.length,
-          suf = "";
+        suf = "";
       while (dot != -1) {
         suf = file.substr(dot) + suf;
         file = file.substr(0, dot);
-        out["*"+suf] = out["*"+suf] || [];
-        out["*"+suf].push(file);
+        out["*" + suf] = out["*" + suf] || [];
+        out["*" + suf].push(file);
         dot = file.lastIndexOf(".");
       }
     }
