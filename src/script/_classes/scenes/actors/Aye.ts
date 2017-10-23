@@ -23,11 +23,11 @@ export default class Aye extends Actor {
     this.gravity = Vector2.dispense();
     this.addAnimation("idle", [0, 1, 2, 3, 4, 5, 6, 7]);
     this.addAnimation("walk", [8, 9, 10, 11, 12, 13, 14, 15], 0);
-    this.addAnimation("jump", [13]);
-    this.addAnimation("stomp", [8]);
-    this.addAnimation("die", [10]);
-    this.addAnimation("do", [16, 17, 18, 19, 20, 21, 22, 23]);
-    this.addAnimation("sleep", [24, 25, 26, 27, 28, 29, 30, 31]);
+    this.addAnimation("jump", [16, 17, 18, 19]);
+    this.addAnimation("apex", [20]);
+    this.addAnimation("fall", [21, 22, 23, 24]);
+    this.addAnimation("stomp", [23]);
+    this.addAnimation("die", [25, 26, 27, 28, 29, 30, 31, 32]);
     this.order = 1024;
   }
 
@@ -91,7 +91,13 @@ export default class Aye extends Actor {
   render() {
     switch (this.state) {
       case "jump":
-        this.playAnimation("jump");
+        let a = Angle.dispense().set(this.velocity.angle).subtractRad(this.gravity.angle);
+        if (Math.abs(a.rad) > Math.PI/2) {
+          this.playAnimation("jump");
+        } else if (this.animation === this.animations["jump"]) {
+          this.playAnimation("apex");
+          this.playAnimation("fall", true);
+        }
         break;
 
       case "stomp":
