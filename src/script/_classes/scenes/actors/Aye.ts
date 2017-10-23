@@ -110,6 +110,9 @@ export default class Aye extends Actor {
 
       case "die":
         this.playAnimation("die");
+        let guts = <ParticleEmitter>this.scene.actorsByName["GutsEmitter"];
+        guts.position.copyFrom(this.position).addXY(Math.random()*32-16,Math.random()*32-16);
+        guts.emit();
         break;
 
       default:

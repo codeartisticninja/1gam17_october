@@ -10,6 +10,7 @@ import Vector2     from "../lib/utils/Vector2";
 import ParticleEmitter from "../lib/scenes/actors/ParticleEmitter";
 import Aye             from "./actors/Aye";
 import Cog             from "./actors/Cog";
+import Guts            from "./actors/Guts";
 
 /**
  * MachineScene class
@@ -20,9 +21,10 @@ export default class MachineScene extends Scene {
 
   constructor(game:myGame, map:string) {
     super(game, map);
+    this.actorTypes["ParticleEmitter"] = ParticleEmitter;
     this.actorTypes["Aye"] = Aye;
     this.actorTypes["Cog"] = Cog;
-    this.actorTypes["ParticleEmitter"] = ParticleEmitter;
+    this.actorTypes["Guts"] = Guts;
     this.boundCamera=false;
   }
 

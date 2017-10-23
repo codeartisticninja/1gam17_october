@@ -25,18 +25,6 @@
          "name":"objects",
          "objects":[
                 {
-                 "gid":1,
-                 "height":128,
-                 "id":1,
-                 "name":"",
-                 "rotation":0,
-                 "type":"Aye",
-                 "visible":true,
-                 "width":128,
-                 "x":630,
-                 "y":240
-                }, 
-                {
                  "gid":34,
                  "height":92,
                  "id":13,
@@ -1551,6 +1539,38 @@
                  "width":138,
                  "x":495,
                  "y":240
+                }, 
+                {
+                 "gid":1,
+                 "height":128,
+                 "id":1,
+                 "name":"",
+                 "rotation":0,
+                 "type":"Aye",
+                 "visible":true,
+                 "width":128,
+                 "x":630,
+                 "y":240
+                }, 
+                {
+                 "gid":41,
+                 "height":32,
+                 "id":145,
+                 "name":"GutsEmitter",
+                 "properties":
+                    {
+                     "startProps":"{\"type\": \"Guts\"}"
+                    },
+                 "propertytypes":
+                    {
+                     "startProps":"string"
+                    },
+                 "rotation":0,
+                 "type":"ParticleEmitter",
+                 "visible":true,
+                 "width":32,
+                 "x":705,
+                 "y":315
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -1558,7 +1578,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":145,
+ "nextobjectid":146,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.0.3",
@@ -1667,6 +1687,19 @@
          "tilecount":1,
          "tileheight":367,
          "tilewidth":367
+        }, 
+        {
+         "columns":1,
+         "firstgid":41,
+         "image":"..\/sprites\/guts.png",
+         "imageheight":256,
+         "imagewidth":32,
+         "margin":0,
+         "name":"guts",
+         "spacing":0,
+         "tilecount":8,
+         "tileheight":32,
+         "tilewidth":32
         }],
  "tilewidth":60,
  "type":"map",

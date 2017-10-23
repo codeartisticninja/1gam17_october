@@ -13,7 +13,7 @@ import Text        from "./actors/Text";
 /**
  * Scene class
  * 
- * @date 18-oct-2017
+ * @date 23-oct-2017
  */
 
 
@@ -172,11 +172,12 @@ export default class Scene {
   }
 
   removeActor(actor:Actor, ...fromGroup:Array<Actor>[]) {
+    var i=-1;
     setTimeout(()=>{
       fromGroup.push(this.actors);
       fromGroup.push(this.actorsByType[actor.type]);
       for (var group of fromGroup) {
-        var i = group.indexOf(actor);
+        if (group) i = group.indexOf(actor); else i = -1;
         if (i !== -1) {
           group.splice(i,1);
         }
