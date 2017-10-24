@@ -13,5 +13,6 @@ export default class Guts extends Actor {
     this.addAnimation("gore", [0, 1, 2, 3, 4, 5, 6, 7]);
     this.playAnimation("gore");
     this.animationFrame += Math.random()*8;
+    this.order = 2048;
   }
 }

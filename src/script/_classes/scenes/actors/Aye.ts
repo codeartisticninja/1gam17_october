@@ -24,10 +24,10 @@ export default class Aye extends Actor {
     this.addAnimation("idle", [0, 1, 2, 3, 4, 5, 6, 7]);
     this.addAnimation("walk", [8, 9, 10, 11, 12, 13, 14, 15], 0);
     this.addAnimation("jump", [16, 17, 18, 19]);
-    this.addAnimation("apex", [20]);
-    this.addAnimation("fall", [21, 22, 23, 24]);
-    this.addAnimation("stomp", [23]);
-    this.addAnimation("die", [25, 26, 27, 28, 29, 30, 31, 32]);
+    this.addAnimation("apex", [20, 21, 22]);
+    this.addAnimation("fall", [23, 24, 25, 26]);
+    this.addAnimation("stomp", [24]);
+    this.addAnimation("die", [27, 28, 29, 30, 31, 32, 33, 34]);
     this.order = 1024;
   }
 
@@ -111,8 +111,8 @@ export default class Aye extends Actor {
       case "die":
         this.playAnimation("die");
         let guts = <ParticleEmitter>this.scene.actorsByName["GutsEmitter"];
-        guts.position.copyFrom(this.position).addXY(Math.random()*32-16,Math.random()*32-16);
-        guts.emit();
+        guts.position.copyFrom(this.position); //.addXY(Math.random()*32-16,Math.random()*32-16);
+        if (Math.random() < .3333) guts.emit();
         break;
 
       default:
