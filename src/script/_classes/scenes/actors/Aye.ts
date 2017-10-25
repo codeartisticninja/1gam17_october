@@ -29,6 +29,7 @@ export default class Aye extends Actor {
     this.addAnimation("stomp", [24]);
     this.addAnimation("die", [27, 28, 29, 30, 31, 32, 33, 34]);
     this.order = 1024;
+    this._spawnPoint = Vector2.dispense().copyFrom(this.position);
   }
 
   update() {
@@ -36,7 +37,7 @@ export default class Aye extends Actor {
     let posDiff = Vector2.dispense();
     let angleDiff = Angle.dispense().set(this.gravity.angle + Math.PI).subtract(this.rotation).multiply(.333);
     this.rotation.add(angleDiff);
-    if (this.scale.y < .125) this.scene.reset();
+    if (this.scale.y < .125) this.respawn();
     this.scale.x = this.scale.x / Math.abs(this.scale.x) * this.scale.y;
 
     if (this.touchingCogs.length >= 2) {
@@ -136,9 +137,16 @@ export default class Aye extends Actor {
     this.state = "stomp";
   }
 
+  respawn() {
+    this.position.copyFrom(this._spawnPoint);
+    this.state = "jump";
+    this.playAnimation("jump");
+  }
+
 
   /*
     _privates
   */
+  private _spawnPoint:Vector2;
 
 }
