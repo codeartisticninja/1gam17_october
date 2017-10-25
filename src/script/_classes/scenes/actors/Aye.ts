@@ -29,7 +29,7 @@ export default class Aye extends Actor {
     this.addAnimation("stomp", [24]);
     this.addAnimation("die", [27, 28, 29, 30, 31, 32, 33, 34]);
     this.order = 1024;
-    this._spawnPoint = Vector2.dispense().copyFrom(this.position);
+    this.position.copyFrom(this.scene.size).multiplyXY(.5);
   }
 
   update() {
@@ -147,6 +147,5 @@ export default class Aye extends Actor {
   /*
     _privates
   */
-  private _spawnPoint: Vector2;
 
 }
