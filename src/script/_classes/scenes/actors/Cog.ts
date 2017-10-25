@@ -10,7 +10,7 @@ import Vector2 from "../../lib/utils/Vector2";
 export default class Cog extends Actor {
   public leader:Cog|null;
   public teeth:number;
-  public inactive:number=256;
+  public inactive:number=128;
 
   constructor(scene:Scene, obj:any) {
     super(scene, obj);

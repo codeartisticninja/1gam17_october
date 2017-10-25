@@ -1,6 +1,6 @@
-Machine
-=======
-We built it over centuries.. Now it's everywhere.. Now there is no escape..
+The Machine
+===========
+We built it over centuries.. Now it's everywhere.. Now there is no going back..
 
 Made by [codeartistic.ninja](http://the.codeartistic.ninja/)
 
