@@ -22,7 +22,7 @@ export default class Aye extends Actor {
     this.size.set(48);
     this.gravity = Vector2.dispense();
     this.addAnimation("idle", [0, 1, 2, 3, 4, 5, 6, 7]);
-    this.addAnimation("walk", [8, 9, 10, 11, 12, 13, 14, 15], 0);
+    this.addAnimation("walk", [8, 9, 10, 11, 12, 13, 14, 15]);
     this.addAnimation("jump", [16, 17, 18, 19]);
     this.addAnimation("apex", [20, 21, 22]);
     this.addAnimation("fall", [23, 24, 25, 26]);
@@ -66,7 +66,7 @@ export default class Aye extends Actor {
         if (joy.dir.x) {
           this.state = "walk";
           this.scale.x = joy.dir.x / Math.abs(joy.dir.x);
-          if (this.animation) this.animation.speed = Math.abs(joy.dir.x);
+          this.animations["walk"].speed = Math.abs(joy.dir.x);
           this.velocity.copyFrom(this.gravity).perp().magnitude = joy.dir.x * 8;
           this.velocity.add(this.gravity);
         } else {
