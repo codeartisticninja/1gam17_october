@@ -32,7 +32,7 @@ export default class MachineScene extends Scene {
 
   reset() {
     super.reset();
-    // this.game.mediaChannels.music.play("./assets/music/AuditoryCheesecake_Avalon.mp3", true);
+    this.game.mediaChannels.music.play("./assets/music/AuditoryCheesecake_Drainage.mp3", true);
   }
 
 
@@ -95,7 +95,9 @@ export default class MachineScene extends Scene {
   }
 
   private _cogMeetsCog(cog1:Cog, cog2:Cog) {
-    if (cog1.inactive) cog1.snapToEdge(cog2, 1);
+    if (cog1.inactive) {
+      cog1.snapToEdge(cog2, 1);
+    }
     if (cog2.leader) cog2.snapToEdge(cog2.leader, 1);
     if (cog1.inactive || cog2.inactive || cog2.leader) return;
     if ((cog1.leader && cog1.leader !== cog2) || cog1.angularVelocity.rad) {
