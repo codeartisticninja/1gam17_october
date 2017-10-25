@@ -24,7 +24,12 @@ export default class Cog extends Actor {
       return this.angularVelocity.rad;
     }
     if (this.leader) {
-      return -this.leader.rotationSpeed * (this.leader.teeth/this.teeth);
+      try {
+        return -this.leader.rotationSpeed * (this.leader.teeth/this.teeth);
+      } catch (err) {
+        this.inactive = 8;
+        return 0;
+      }
     }
     return 0;
   }
@@ -35,9 +40,11 @@ export default class Cog extends Actor {
 
   update() {
     if (this.inactive) {
+      this.inactive--;
+      if (this.leader) this.leader.inactive = this.inactive;
       this.leader = null;
       this._preRotation = null;
-      this.inactive--;
+      this.angularVelocity.set(0);
     }
     super.update();
     if (this.leader) {

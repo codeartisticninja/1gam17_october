@@ -93,7 +93,7 @@ export default class Aye extends Actor {
     switch (this.state) {
       case "jump":
         let a = Angle.dispense().set(this.velocity.angle).subtractRad(this.gravity.angle);
-        if (Math.abs(a.rad) > Math.PI/2) {
+        if (Math.abs(a.rad) > Math.PI / 2) {
           this.playAnimation("jump");
         } else if (this.animation === this.animations["jump"]) {
           this.playAnimation("apex");
@@ -138,8 +138,8 @@ export default class Aye extends Actor {
   }
 
   respawn() {
-    this.position.copyFrom(this._spawnPoint);
-    this.state = "jump";
+    this.position.set(Math.random() * this.scene.size.x, Math.random() * this.scene.size.y);
+    this.state = "stomp";
     this.playAnimation("jump");
   }
 
@@ -147,6 +147,6 @@ export default class Aye extends Actor {
   /*
     _privates
   */
-  private _spawnPoint:Vector2;
+  private _spawnPoint: Vector2;
 
 }

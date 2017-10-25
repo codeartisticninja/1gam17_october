@@ -9,7 +9,8 @@ import Vector2     from "../lib/utils/Vector2";
 
 import ParticleEmitter from "../lib/scenes/actors/ParticleEmitter";
 import Aye             from "./actors/Aye";
-import Cog             from "./actors/Cog";
+import CogSpawner      from "./actors/CogSpawner"; 
+import Cog             from "./actors/Cog"; 
 import Guts            from "./actors/Guts";
 
 /**
@@ -23,6 +24,7 @@ export default class MachineScene extends Scene {
     super(game, map);
     this.actorTypes["ParticleEmitter"] = ParticleEmitter;
     this.actorTypes["Aye"] = Aye;
+    this.actorTypes["CogSpawner"] = CogSpawner;
     this.actorTypes["Cog"] = Cog;
     this.actorTypes["Guts"] = Guts;
     this.boundCamera=false;
@@ -35,7 +37,7 @@ export default class MachineScene extends Scene {
 
 
   update() {
-    if (!this.actorsByType["Aye"]) return;
+    if (!this.actorsByType["Cog"]) return super.update();
     let diff = Vector2.dispense();
     for (let aye of this.actorsByType["Aye"]) {
       aye.gravity.set(0);
@@ -78,9 +80,10 @@ export default class MachineScene extends Scene {
     aye.touchingCogs.push(cog);
     if (aye.state === "stomp") {
       cog.snapToEdge(aye);
-      cog.inactive += 64;
+      cog.inactive += 8;
     } else {
       aye.snapToEdge(cog, 1);
+      if (!cog.rotationSpeed) cog.angularVelocity.deg = 1 + Math.random();
     }
     aye.velocity.set(0);
     if (aye.state === "jump" || aye.state === "stomp") aye.state = "idle";
@@ -95,7 +98,7 @@ export default class MachineScene extends Scene {
     if (cog1.inactive || cog2.inactive || cog2.leader) return;
     if ((cog1.leader && cog1.leader !== cog2) || cog1.angularVelocity.rad) {
       cog2.leader = cog1;
-      cog2.snapToEdge(cog1, 1);
     }
+    if (cog2.leader) cog2.snapToEdge(cog2.leader, 1);
   }
 }
