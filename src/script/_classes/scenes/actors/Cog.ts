@@ -10,7 +10,7 @@ import Vector2 from "../../lib/utils/Vector2";
 export default class Cog extends Actor {
   public leader:Cog|null;
   public teeth:number;
-  public inactive:number=0;
+  public inactive:number=256;
 
   constructor(scene:Scene, obj:any) {
     super(scene, obj);
@@ -45,6 +45,11 @@ export default class Cog extends Actor {
       this.leader = null;
       this._preRotation = null;
       this.angularVelocity.set(0);
+      /*
+      let someCog = this.scene.actorsByType["Cog"][Math.floor(this.scene.actorsByType["Cog"].length*Math.random())];
+      let v = Vector2.dispense().copyFrom(someCog.position).subtract(this.position).normalize();
+      this.position.add(v);
+      v.recycle(); */
     }
     super.update();
     if (this.leader) {

@@ -83,7 +83,7 @@ export default class MachineScene extends Scene {
       cog.inactive += 8;
     } else {
       aye.snapToEdge(cog, 1);
-      if (!cog.rotationSpeed) cog.angularVelocity.deg = 1 + Math.random();
+      if (!cog.rotationSpeed && !cog.inactive) cog.angularVelocity.deg = 1 + Math.random();
     }
     aye.velocity.set(0);
     if (aye.state === "jump" || aye.state === "stomp") aye.state = "idle";
@@ -95,10 +95,11 @@ export default class MachineScene extends Scene {
   }
 
   private _cogMeetsCog(cog1:Cog, cog2:Cog) {
+    if (cog1.inactive) cog1.snapToEdge(cog2, 1);
+    if (cog2.leader) cog2.snapToEdge(cog2.leader, 1);
     if (cog1.inactive || cog2.inactive || cog2.leader) return;
     if ((cog1.leader && cog1.leader !== cog2) || cog1.angularVelocity.rad) {
       cog2.leader = cog1;
     }
-    if (cog2.leader) cog2.snapToEdge(cog2.leader, 1);
   }
 }

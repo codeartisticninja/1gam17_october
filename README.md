@@ -1,6 +1,6 @@
-Game of october 2017
-====================
-yea...
+Machine
+=======
+We built it over centuries.. Now it's everywhere.. Now there is no escape..
 
 Made by [codeartistic.ninja](http://the.codeartistic.ninja/)
 

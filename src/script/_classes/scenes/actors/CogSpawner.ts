@@ -16,11 +16,11 @@ export default class CogSpawner extends ParticleEmitter {
   }
 
   update() {
-    if (this.count > 0) this.scene.removeActor(this);
-    while (this.count-- > 0) {
-      this.position.set(Math.random() * this.scene.size.x, Math.random() * this.scene.size.y);
+    if (this.count === 0) this.scene.removeActor(this);
+    if (this.count-- > 0) {
+      this.position.set(this.scene.size.x * Math.random(), this.scene.size.y * Math.random());
+      // this.position.set(this.scene.size.x / 2, this.scene.size.y / 2).addXY(Math.random() * 512 - 256, Math.random() * 256 - 128);
       this.emit();
-      console.log("ting!");
     }
     return super.update();
   }
